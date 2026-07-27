@@ -353,4 +353,6 @@ what ships.
 
 Made for the Baldesion Arsenal crowd, by Boujee Becky.
 
+Released under the [MIT licence](LICENSE).
+
 </div>
