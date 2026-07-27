@@ -7,8 +7,23 @@
     "InternalName": "Logoria",
     "AssemblyVersion": "1.0.0.0",
     "RepoUrl": "https://github.com/BoujeeBecky/Logoria",
-    "Tags": ["eureka", "logos", "mneme", "logogram", "dex", "collection", "tracker", "farming", "hydatos", "pyros", "manipulator", "baldesion"],
-    "CategoryTags": ["Utility"],
+    "Tags": [
+      "eureka",
+      "logos",
+      "mneme",
+      "logogram",
+      "dex",
+      "collection",
+      "tracker",
+      "farming",
+      "hydatos",
+      "pyros",
+      "manipulator",
+      "baldesion"
+    ],
+    "CategoryTags": [
+      "Utility"
+    ],
     "IsHide": false,
     "IsTestingExclusive": false,
     "DalamudApiLevel": 15,
@@ -16,6 +31,6 @@
     "DownloadLinkTesting": "https://github.com/BoujeeBecky/Logoria/releases/latest/download/latest.zip",
     "DownloadLinkUpdate": "https://github.com/BoujeeBecky/Logoria/releases/latest/download/latest.zip",
     "Changelog": "v1.0.0 - Initial release. Per-character dex for all 56 Logos Actions, automatic sync from Drake's Logos Action Log, live mneme stock at the Manipulator, ready-to-synthesise highlighting, farming planner with grouped shopping list and map pins, visual collection log, pinnable overlay tracker, ten themes plus a vanilla mode.",
-    "LastUpdate": 0
+    "LastUpdate": 1785121865
   }
 ]

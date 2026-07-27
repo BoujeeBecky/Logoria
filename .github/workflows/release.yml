@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 on:
   push:
@@ -28,8 +28,16 @@ jobs:
           Expand-Archive dalamud.zip dalamud
           "DALAMUD_HOME=$pwd\dalamud" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
+      # Release, never Debug. Debug additionally compiles the diagnostics tooling,
+      # which must not reach a published build.
       - name: Build
         run: dotnet build -c Release
+
+      # Confirms the shipped assembly carries no diagnostics tooling and no
+      # networking reference. Fails the release rather than publishing a build
+      # that quietly does.
+      - name: Verify the shipped assembly
+        run: dotnet run --project Tools\VerifyRelease -c Release -- bin\Release\Logoria.dll
 
       # Release title = first line of RELEASE_NOTES.md (leading "# " stripped);
       # the file body becomes the release notes.
@@ -42,7 +50,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ github.ref_name }} â€” ${{ env.RELEASE_TITLE }}
+          # Quoted, and separated by a hyphen rather than a colon: ": " inside an
+          # unquoted YAML scalar is a mapping, not text, and would fail to parse.
+          name: "${{ github.ref_name }} - ${{ env.RELEASE_TITLE }}"
           body_path: RELEASE_NOTES.md
           files: bin/Release/Logoria/latest.zip
           generate_release_notes: true
