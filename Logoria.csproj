@@ -1,0 +1,117 @@
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+
+  <!-- The shared UI kit is VENDORED into UiKit\ rather than imported from a
+       sibling checkout, so this repository builds on its own with nothing else
+       cloned. The authoring copy still lives in Dalamud_UI_Framework; see
+       UiKit\README.md for which one to edit and how they stay in step. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    
+    <AssemblyName>Logoria</AssemblyName>
+    <RootNamespace>Logoria</RootNamespace>
+    <Version>1.0.0.0</Version>
+    <Name>Logoria</Name>
+    <Author>Boujee Becky</Author>
+    <Punchline>Eureka Logos Action dex, farming planner, and one-click Logos Manipulator auto-fill.</Punchline>
+    <Description>A collection log for all 56 Eureka Logos Actions. Syncs automatically from Drake's in-game Logos Action Log, so your dex fills itself with no manual ticking. Reads your live mneme stock at the Logos Manipulator and highlights every action you can synthesise but have never made. One click loads a combination into the Astral Array, stopping short of the synthesis itself so nothing is ever consumed without your say-so. The farming planner totals mnemes across everything you are working toward and groups them by the logogram that yields them, with how each one drops. Includes a visual collection log, a pinnable overlay tracker, and ten UI themes.</Description>
+    <!-- Semicolons, not commas: MSBuild splits properties into items on ';', so a
+         comma-separated list becomes one tag containing commas. -->
+    <Tags>eureka;logos;mneme;logogram;dex;collection;tracker;farming;hydatos;pyros;manipulator;baldesion</Tags>
+    <!-- Tools\ holds the standalone data-generation projects; they are not part of the plugin. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);Dalamud Dev Info - GIT IGNORE\**;Tools\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <!-- Diagnostics is a development tool, not a feature. It is compiled into the
+       Debug build only, so the Release build that ships to players contains no
+       addon listeners, no FireCallback hook, no memory probe and no window for
+       any of it. Not disabled at runtime: absent from the assembly.
+
+       This is why the two builds are not interchangeable. Debug is the dev plugin;
+       Release is what goes in latest.zip. Verify with:
+         dotnet build -c Release
+         ilspycmd bin\Release\Logoria.dll | findstr /i diagnostics     (expect nothing) -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);LOGORIA_DIAG</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Removed from the compile entirely in Release rather than only #if'd out, so
+       the shipped build cannot contain these types even by mistake. -->
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <Compile Remove="Services\DiagnosticsService.cs" />
+    <Compile Remove="Services\CallbackCaptureService.cs" />
+    <Compile Remove="Services\EurekaStateProbe.cs" />
+    <Compile Remove="UI\DiagnosticsWindow.cs" />
+  </ItemGroup>
+
+  <!--
+    Refreshes the vendored kit from its authoring checkout, and only when that
+    checkout is actually present. On a clean clone the condition is false, the
+    target does nothing, and the committed copy in UiKit\ builds as-is.
+
+    Automatic rather than a script somebody has to remember: the failure mode of a
+    manual sync is committing a stale copy and shipping code that does not match
+    the source it was written in. Doing it at build time means a change to the kit
+    shows up in this repo's git status the next time Logoria is built, which is
+    exactly when it should be noticed.
+
+    Deliberately one-directional. Edits belong in the authoring copy; anything
+    changed directly in UiKit\ is overwritten the next time this runs.
+  -->
+  <PropertyGroup>
+    <UiKitAuthoringRoot>$(MSBuildThisFileDirectory)..\Dalamud_UI_Framework\</UiKitAuthoringRoot>
+  </PropertyGroup>
+
+  <Target Name="SyncVendoredUiKit" BeforeTargets="BeforeBuild"
+          Condition="Exists('$(UiKitAuthoringRoot)src')">
+    <ItemGroup>
+      <UiKitSource Include="$(UiKitAuthoringRoot)src\**\*.cs" />
+      <UiKitAsset Include="$(UiKitAuthoringRoot)assets\noise.png;
+                           $(UiKitAuthoringRoot)assets\shadow.png;
+                           $(UiKitAuthoringRoot)assets\glowing_border.png" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(UiKitSource)"
+          DestinationFolder="$(MSBuildThisFileDirectory)UiKit\%(RecursiveDir)"
+          SkipUnchangedFiles="true" />
+
+    <Copy SourceFiles="@(UiKitAsset)"
+          DestinationFolder="$(MSBuildThisFileDirectory)assets\"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- UI art, copied next to the DLL so ITextureProvider can load it at runtime.
+       Listed explicitly rather than globbed with exclusions: a whitelist cannot
+       quietly start shipping a new source render or intermediate that happens to
+       land in assets\. Every file here is loaded by Services\AssetService.cs. -->
+  <ItemGroup>
+    <!-- logo.png is intentionally NOT shipped: nothing in the UI loads it. It stays
+         in the repo as the image for the README and the plugin listing. -->
+    <None Include="assets\logo_mark.png" />
+    <None Include="assets\banner.jpg" />
+    <None Include="assets\watermark.png" />
+
+    <!-- The next three belong to the UI kit rather than to Logoria, and are
+         vendored alongside UiKit\ by the same sync. -->
+    <None Include="assets\noise.png" />
+    <None Include="assets\shadow.png" />
+    <None Include="assets\glowing_border.png" />
+
+    <!-- nav_highlight.png is not shipped at all: the nav selection is drawn
+         procedurally, which stays sharp at row height and follows the theme. -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="assets\*"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="assets\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

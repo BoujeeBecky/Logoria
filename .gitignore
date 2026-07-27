@@ -1,0 +1,43 @@
+# ---- build output ----
+# These patterns match at any depth, so they cover Tools\ projects too.
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# ---- folders already marked local-only by name ----
+Dalamud Dev Info - GIT IGNORE/
+Screenshots-GITIGNORE/
+
+# ---- data pipeline intermediates ----
+# Data\*.g.cs IS committed: it is the shipped database. These are only the working
+# files used to produce it, and Tools\ can recreate all of them.
+Tools/eureka-tracker.js
+Tools/eureka_extracted.json
+Tools/logoria_db.json
+
+# ---- asset generation ----
+# The generator and its inputs are authoring tools, not build inputs. The shipped
+# PNGs ARE committed, so a clean clone builds and runs without either of these.
+assets/generate_assets.py
+assets/sources/
+
+# ---- unused assets ----
+# Superseded renders and dropped sprites, kept locally in case a look needs
+# revisiting. A trailing slash ignores the folder and everything under it, at any
+# depth, so nothing new dropped in there needs another rule.
+assets/Not_Used/
+
+# assets\Logoria_Logo_Transparent.png IS committed: it is the master artwork that
+# logo.png and logo_mark.png are derived from, and nothing can recreate it.
+# assets\logo.png IS committed too: it is the README and plugin-listing image.
+
+# ---- python ----
+__pycache__/
+*.pyc
+
+# ---- os cruft ----
+Thumbs.db
+desktop.ini
+.DS_Store
