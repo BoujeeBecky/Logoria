@@ -23,9 +23,27 @@ class Program
             return 2;
         }
 
-        var hooks = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "XIVLauncher", "addon", "Hooks", "dev");
+        // Where the Dalamud reference assemblies live. DALAMUD_HOME first, because
+        // that is what CI sets after downloading the distribution; a build runner
+        // has no XIVLauncher install, and reading that path unconditionally threw
+        // DirectoryNotFoundException and failed the release step.
+        var hooks = Environment.GetEnvironmentVariable("DALAMUD_HOME");
+
+        if (string.IsNullOrWhiteSpace(hooks) || !Directory.Exists(hooks))
+        {
+            hooks = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "XIVLauncher", "addon", "Hooks", "dev");
+        }
+
+        if (!Directory.Exists(hooks))
+        {
+            Console.WriteLine($"No Dalamud assemblies found at '{hooks}'.");
+            Console.WriteLine("Set DALAMUD_HOME to a Dalamud distribution, or install XIVLauncher.");
+            return 2;
+        }
+
+        Console.WriteLine($"resolving references from: {hooks}");
 
         var paths = Directory.GetFiles(hooks, "*.dll").ToList();
         paths.AddRange(Directory.GetFiles(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "*.dll"));
