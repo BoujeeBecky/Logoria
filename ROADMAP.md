@@ -5,7 +5,7 @@
 Ordered by impact per unit of effort. The first two are the ones that will change
 how the plugin *feels*, and neither needs any new assets.
 
-### ~~1. Icons in the nav rail~~ — DONE
+### ~~1. Icons in the nav rail~~: DONE
 
 FontAwesome via `UiBuilder.FontIcon`, handed to the kit each frame as
 `Ui.IconFont` so the kit does not reach for Dalamud services itself. `Ui.NavItem`
@@ -15,7 +15,7 @@ vary in width and ragged icons would undo the alignment they are meant to provid
 Note `ImFontPtr` has no measure method in these bindings: push the font, call
 `ImGui.CalcTextSize`, pop.
 
-### ~~2. Motion~~ — DONE
+### ~~2. Motion~~: DONE
 
 `UiAnim` in the kit: one float per key, eased toward whatever target the caller
 passes, so callers stay stateless. Wired into nav hover fades, the rail's progress
@@ -33,18 +33,18 @@ Two details that matter:
 Still unanimated, if wanted later: the nav selection sliding between rows, which
 needs group-level state rather than per-widget state.
 
-### ~~3. Mneme icons in recipes~~ — DONE
+### ~~3. Mneme icons in recipes~~: DONE
 
 Drawn in the dex table, the floating tracker, the farming plan and every recipe
 tooltip. `UIHelpers.DrawGameIcon` reserves the space whether or not the texture has
 loaded, so a slow load cannot shift the layout around it.
 
-### ~~4. Monospace figures~~ — DONE
+### ~~4. Monospace figures~~: DONE
 
 `Ui.TextMono` via `UiBuilder.FontMono`, used for every `have/need` pair and the
 registered count. Falls back to the normal font when no mono face is supplied.
 
-### ~~5. Smoother curves~~ — DONE
+### ~~5. Smoother curves~~: DONE
 
 `CircleTessellationMaxError` lowered from ImGui's 0.30 to 0.12.
 
@@ -53,7 +53,7 @@ put back afterwards. `StyleScope` captures the old value and restores it on
 dispose; leaving it changed would alter how every other plugin's rounded corners
 tessellate.
 
-### ~~6. Custom font~~ — DONE (needs a font file)
+### ~~6. Custom font~~: DONE (needs a font file)
 
 `FontService` loads the first `.ttf`/`.otf` from the plugin's `assets/fonts/`
 folder and every window pushes it in `PreDraw`, alongside the theme, so the title
